@@ -1,0 +1,87 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Commande {{ commande.code }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="mb-4">
+            <h1>Commande {{ commande.code }}</h1>
+            <p class="text-body-secondary mb-0">Détail des articles et du paiement de la commande.</p>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Client</dt>
+                    <dd class="col-sm-9">{{ commande.client.firstname }} {{ commande.client.lastname }} ({{ commande.client.email }})</dd>
+
+                    <dt class="col-sm-3">Date de création</dt>
+                    <dd class="col-sm-9">{{ commande.createdAt|date('d/m/Y H:i') }}</dd>
+
+                    <dt class="col-sm-3">Montant enregistré</dt>
+                    <dd class="col-sm-9">{{ commande.totalAmount|number_format(0, ',', ' ') }} FCFA</dd>
+
+                    <dt class="col-sm-3">Statut</dt>
+                    <dd class="col-sm-9">
+                        {% if commande.currentStatus %}
+                            {{ commande.currentStatus.label }}
+                        {% else %}
+                            En attente
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-3">Paiement</dt>
+                    <dd class="col-sm-9">{{ commande.paymentStatus|replace({'_': ' '})|capitalize }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 px-4 pt-4">
+                <h2 class="h5 mb-1">Articles commandés</h2>
+                <p class="small text-body-secondary mb-0">
+                    {{ commande.lignes|length }} article{{ commande.lignes|length > 1 ? 's' : '' }}
+                </p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Produit</th>
+                            <th class="text-end">Prix unitaire</th>
+                            <th class="text-end">Quantité</th>
+                            <th class="text-end pe-4">Sous-total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ligne in commande.lignes %}
+                            <tr>
+                                <td class="ps-4 fw-semibold">{{ ligne.product.name }}</td>
+                                <td class="text-end text-nowrap">{{ ligne.unitPrice|number_format(0, ',', ' ') }} FCFA</td>
+                                <td class="text-end">{{ ligne.quantity }}</td>
+                                <td class="text-end pe-4 fw-semibold text-nowrap">{{ ligne.subtotal|number_format(0, ',', ' ') }} FCFA</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-body-secondary py-4">
+                                    Aucun article n’est associé à cette commande.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if commande.lignes|length > 0 %}
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end">Total des articles</th>
+                                <th class="text-end pe-4 text-nowrap">{{ commande.lignesTotalAmount|number_format(0, ',', ' ') }} FCFA</th>
+                            </tr>
+                        </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <a class="btn btn-outline-primary" href="{{ path('app_commande_edit', {id: commande.id}) }}">Modifier</a>
+        <a class="btn btn-outline-secondary" href="{{ path('app_commande_index') }}">Retour à la liste</a>
+    </div>
+{% endblock %}

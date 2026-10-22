@@ -1,0 +1,31 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Catégorie {{ category.label }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <a class="btn btn-link px-0 text-decoration-none mb-3" href="{{ path('app_category_index') }}">Retour aux catégories</a>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white p-4">
+                <p class="text-uppercase text-primary fw-semibold small mb-1">Référentiel</p>
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                    <div>
+                        <h1 class="h2 fw-bold mb-1">{{ category.label }}</h1>
+                        <span class="text-body-secondary">Catégorie #{{ category.id }}</span>
+                    </div>
+                    <a class="btn btn-primary" href="{{ path('app_category_edit', {id: category.id}) }}">Modifier</a>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-body-secondary">Libellé</dt>
+                    <dd class="col-sm-8 fw-semibold">{{ category.label }}</dd>
+                    <dt class="col-sm-4 text-body-secondary">Code</dt>
+                    <dd class="col-sm-8"><code>{{ category.code }}</code></dd>
+                    <dt class="col-sm-4 text-body-secondary">Date de création</dt>
+                    <dd class="col-sm-8">{{ category.createdAt|date('d/m/Y à H:i') }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}{{ product.name }} | La Boutique{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <a class="small text-decoration-none" href="{{ path('app_product_index') }}">← Retour au catalogue</a>
+        <div class="row justify-content-center mt-3">
+            <div class="col-lg-9 col-xl-8">
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex flex-column flex-md-row justify-content-between gap-4">
+                            <div>
+                                <span class="badge text-bg-light border mb-3">Référence #{{ product.id }}</span>
+                                <p class="text-uppercase text-primary fw-semibold small mb-1">Fiche produit</p>
+                                <h1 class="h2 fw-bold mb-3">{{ product.name }}</h1>
+                                <p class="display-6 fw-bold text-primary mb-0">{{ product.price|number_format(0, ',', ' ') }} FCFA</p>
+                            </div>
+                            {% if product.image %}
+                                <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" class="img-fluid rounded" style="max-height: 220px; object-fit: contain">
+                            {% endif %}
+                            <div class="d-flex flex-wrap align-items-start gap-2">
+                                <a class="btn btn-primary" href="{{ path('app_product_edit', {'id': product.id}) }}">Modifier</a>
+                                {{ include('back/product/_delete_form.html.twig') }}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <dl class="row">
+                            <dt class="col-sm-3">Stock disponible</dt>
+                            <dd class="col-sm-9">{{ product.stock }}</dd>
+                            <dt class="col-sm-3">Catégorie</dt>
+                            <dd class="col-sm-9">{{ product.category.label }}</dd>
+                            <dt class="col-sm-3">Marque</dt>
+                            <dd class="col-sm-9">{{ product.brand.label }}</dd>
+                            <dt class="col-sm-3">Publication</dt>
+                            <dd class="col-sm-9">
+                                {% if product.currentStatus and product.currentStatus.status == 'publie' %}
+                                    Publié
+                                {% else %}
+                                    Masqué
+                                {% endif %}
+                            </dd>
+                        </dl>
+
+                        <h2 class="h5 fw-semibold mb-2">Description</h2>
+                        {% if product.description %}
+                            <p class="text-body-secondary mb-0" style="white-space: pre-line">{{ product.description }}</p>
+                        {% else %}
+                            <p class="text-body-secondary fst-italic mb-0">Aucune description n’a été renseignée.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

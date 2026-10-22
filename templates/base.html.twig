@@ -1,35 +1,35 @@
 
-<!doctype html>
-<html lang="en" data-bs-theme="auto">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}La Boutique Française - 100% Made in France{% endblock %}</title>
-    <meta name="description" content="La boutique spécialisée dans la fabrication Made In France">
+    <!doctype html>
+    <html lang="fr" data-bs-theme="auto">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+        <link rel="stylesheet" href="/assets/css/style.css">
 
-    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="/assets/css/carousel.css" rel="stylesheet">
-    <link href="/assets/css/custom.css" rel="stylesheet">
-    <script src="https://unpkg.com/feather-icons"></script>
-</head>
-<body>
-    {% include 'header.html.twig' %}
+        <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+ 
+        <!-- Custom styles for this template -->
+        <link href="/assets/css/carousel.css" rel="stylesheet">
+        <link href="/assets/css/custom.css" rel="stylesheet">
+        {% block stylesheets %}{% endblock %}
+        <script src="https://unpkg.com/feather-icons"></script>
+    </head>
+    <body>
+        {% include 'header.html.twig' %}
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        
     
-   
-  <main>
-    {% block content %}{% endblock %} 
-</main>
-{% include 'footer.html.twig' %}
+    <main class="flex-fill py-4">
+        {% block body%}{% endblock %} 
+    </main>
+    {% include 'footer.html.twig' %}
 
-{% include 'base_js.html.twig' %}
-<script src="/assets/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/global.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
-<script href="https://cdn.jsdelivr.net/npm/notyd@3/notify.min.css"></script>
+    {% include 'base_js.html.twig' %}
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/global.js"></script>
 
-</body>
-</html>
+    </body>
+    </html>

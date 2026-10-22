@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Valider ma commande{% endblock %}
+
+{% block body %}
+    <section class="container py-5 mt-4">
+        <a class="btn btn-link px-0 mb-3" href="{{ path('app_cart') }}">Retour au panier</a>
+        <h1 class="display-6 fw-bold mb-4">Finaliser ma commande</h1>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="h5 fw-bold mb-4">Livraison et paiement</h2>
+                        {{ form_start(form) }}
+                            {{ form_errors(form) }}
+                            <div class="row g-3">
+                                <div class="col-12">{{ form_row(form.paymentMethod) }}</div>
+                                <div class="col-12">{{ form_row(form.deliveryPhone) }}</div>
+                                <div class="col-12">{{ form_row(form.deliveryAddress) }}</div>
+                                <div class="col-12">{{ form_row(form.deliveryAddressComplement) }}</div>
+                                <div class="col-md-6">{{ form_row(form.deliveryCity) }}</div>
+                                <div class="col-md-6">{{ form_row(form.deliveryPostalCode) }}</div>
+                                <div class="col-12">{{ form_row(form.deliveryCountry) }}</div>
+                            </div>
+                            <button class="btn btn-primary btn-lg w-100 mt-4" type="submit">
+                                Confirmer la commande · {{ total|number_format(0, ',', ' ') }} FCFA
+                            </button>
+                        {{ form_end(form) }}
+                        <p class="small text-body-secondary mt-3 mb-0">
+                            La sélection du moyen de paiement enregistre votre choix. Le paiement sera effectué selon les instructions communiquées par la boutique.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="col-lg-5">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="h5 fw-bold mb-3">Récapitulatif</h2>
+                        {% for line in cart.lignes %}
+                            <div class="d-flex justify-content-between gap-3 py-2 border-bottom">
+                                <span>{{ line.product.name }} <span class="text-body-secondary">× {{ line.quantity }}</span></span>
+                                <span class="text-nowrap">{{ line.subtotal|number_format(0, ',', ' ') }} FCFA</span>
+                            </div>
+                        {% endfor %}
+                        <div class="d-flex justify-content-between fw-bold pt-3">
+                            <span>Total à payer</span>
+                            <span class="text-primary">{{ total|number_format(0, ',', ' ') }} FCFA</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+{% endblock %}

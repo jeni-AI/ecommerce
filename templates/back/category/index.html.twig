@@ -1,0 +1,74 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Catégories{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 p-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <p class="text-uppercase text-primary fw-semibold small mb-1">Référentiels</p>
+                        <h1 class="h2 fw-bold mb-1">Catégories</h1>
+                        <p class="text-body-secondary mb-0">Organisez les produits de votre boutique.</p>
+                    </div>
+                    <a class="btn btn-primary" href="{{ path('app_category_new') }}"
+               aria-label="Ajouter une commande" title="Ajouter une commande">
+                <i class="bi bi-plus-lg"></i>
+            </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top border-bottom bg-light">
+                    <h2 class="h6 mb-0">Toutes les catégories</h2>
+                    <span class="badge text-bg-secondary">{{ categories|length }}</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Libellé</th>
+                                <th>Code</th>
+                                <th class="text-nowrap">Date de création</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td class="ps-4 text-body-secondary">{{ category.id }}</td>
+                                <td class="fw-semibold">{{ category.label }}</td>
+                                <td><code>{{ category.code }}</code></td>
+                                <td class="text-nowrap">{{ category.createdAt ? category.createdAt|date('d/m/Y H:i') : '—' }}</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                           href="{{ path('app_category_show', {id: category.id}) }}"
+                                           title="Détails" aria-label="Détails">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           href="{{ path('app_category_edit', {id: category.id}) }}"
+                                           title="Modifier" aria-label="Modifier">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <p class="fw-semibold mb-1">Aucune catégorie enregistrée</p>
+                                    <p class="text-body-secondary mb-3">Créez une catégorie pour organiser vos produits.</p>
+                                    <a class="btn btn-primary" href="{{ path('app_category_new') }}">Créer la première catégorie</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

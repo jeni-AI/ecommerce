@@ -1,0 +1,26 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Ajouter un produit | La Boutique{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <a class="small text-decoration-none" href="{{ path('app_product_index') }}">← Retour au catalogue</a>
+        <div class="row justify-content-center mt-3">
+            <div class="col-lg-8 col-xl-7">
+                <div class="mb-4">
+                    <p class="text-uppercase text-primary fw-semibold small mb-1">Catalogue</p>
+                    <h1 class="h2 fw-bold mb-1">Ajouter un produit</h1>
+                    <p class="text-body-secondary mb-0">Renseignez les informations du nouveau produit.</p>
+                </div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        {{ include('back/product/_form.html.twig', {
+                            button_label: 'Créer le produit',
+                            button_class: 'btn-primary'
+                        }) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

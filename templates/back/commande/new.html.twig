@@ -1,0 +1,11 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Créer une commande{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1>Créer une commande</h1>
+        {{ include('back/commande/_form.html.twig') }}
+        <a class="btn btn-outline-secondary mt-3" href="{{ path('app_commande_index') }}">Retour à la liste</a>
+    </div>
+{% endblock %}

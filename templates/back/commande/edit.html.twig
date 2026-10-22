@@ -1,0 +1,11 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Modifier une commande{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1>Modifier la commande {{ commande.code }}</h1>
+        {{ include('back/commande/_form.html.twig', {button_label: 'Enregistrer les modifications'}) }}
+        <a class="btn btn-outline-secondary mt-3" href="{{ path('app_commande_index') }}">Retour à la liste</a>
+    </div>
+{% endblock %}

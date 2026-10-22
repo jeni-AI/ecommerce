@@ -1,0 +1,55 @@
+{% extends is_granted('ROLE_ADMIN') ? 'base-back.html.twig' : 'base.html.twig' %}
+{% block title %}Mon compte{% endblock %}
+{% block body %}
+<div class="container my-5">
+    <h1 class="mb-4">Mon profil</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success mt-3" role="alert">{{ message }}</div>
+    {% endfor %}
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <section class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Informations du compte</h2>
+                    {{ form_start(profileForm) }}
+                        {{ form_errors(profileForm) }}
+                        {{ form_row(profileForm.firstname) }}
+                        {{ form_row(profileForm.lastname) }}
+                        {{ form_row(profileForm.email) }}
+                        <button type="submit" class="btn btn-primary">Enregistrer les informations</button>
+                    {{ form_end(profileForm) }}
+                </div>
+            </section>
+        </div>
+
+        {% if clientProfileForm %}
+            <div class="col-lg-7">
+                <section class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">Coordonnées personnelles</h2>
+                        {{ form_start(clientProfileForm) }}
+                            {{ form_errors(clientProfileForm) }}
+                            {{ form_row(clientProfileForm.telephone) }}
+                            {{ form_row(clientProfileForm.personalAddress) }}
+                            {{ form_row(clientProfileForm.personalAddressComplement) }}
+                            <div class="row">
+                                <div class="col-md-6">{{ form_row(clientProfileForm.personalCity) }}</div>
+                                <div class="col-md-6">{{ form_row(clientProfileForm.personalPostalCode) }}</div>
+                            </div>
+                            {{ form_row(clientProfileForm.personalCountry) }}
+                            <button type="submit" class="btn btn-primary">Enregistrer les coordonnées</button>
+                        {{ form_end(clientProfileForm) }}
+                    </div>
+                </section>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <a href="{{ path(is_granted('ROLE_ADMIN') ? 'app_admin_acount_modify_pwd' : 'app_acount_modify-pwd') }}" class="btn btn-outline-primary">Modifier le mot de passe</a>
+        <a href="{{ path(is_granted('ROLE_ADMIN') ? 'app_admin_logout' : 'app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+    </div>
+</div>
+{% endblock %}

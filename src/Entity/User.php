@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -10,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'Cette adresse e-mail est déjà associée à un compte.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -37,6 +39,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Role $role = null;
+
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Client::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private ?Client $client = null;
+
+    #[ORM\Column(options: ['default' => 1])]
+    private ?bool $is_valid = true;
 
     public function getId(): ?int
     {
@@ -70,11 +82,43 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        $roles = [];
+        $roleCode = $this->role?->getCode();
+        if ($roleCode !== null) {
+            $roles[] = $roleCode;
+        }
+
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
+    }
+
+    public function getRole(): ?Role
+    {
+        return $this->role;
+    }
+
+    public function setRole(Role $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): static
+    {
+        $this->client = $client;
+
+        if ($client !== null && $client->getUser() !== $this) {
+            $client->setUser($this);
+        }
+
+        return $this;
     }
 
     /**
@@ -139,6 +183,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function isValid(): ?bool
+    {
+        return $this->is_valid;
+    }
+
+    public function setIsValid(bool $is_valid): static
+    {
+        $this->is_valid = $is_valid;
 
         return $this;
     }

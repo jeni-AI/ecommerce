@@ -1,0 +1,47 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Rôles{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Gestion des rôles</h1>
+        <a class="btn btn-primary" href="{{ path('app_role_new') }}">Ajouter un rôle</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+    {% endfor %}
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Rôle</th>
+                    <th>Code</th>
+                    <th>Créé le</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for role in roles %}
+                <tr>
+                    <td>{{ role.label }}</td>
+                    <td><code>{{ role.code }}</code></td>
+                    <td>{{ role.createdAt|date('d/m/Y H:i') }}</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_role_show', {id: role.id}) }}">Détails</a>
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('app_role_edit', {id: role.id}) }}">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="text-center">Aucun rôle n’est enregistré.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

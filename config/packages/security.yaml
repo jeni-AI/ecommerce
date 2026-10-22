@@ -3,6 +3,11 @@ security:
     password_hashers: 
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
+    role_hierarchy:
+        ROLE_CLIENT: ROLE_USER
+        ROLE_MANAGER: ROLE_USER
+        ROLE_ADMIN: ROLE_USER
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -16,7 +21,27 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        admin:
+            pattern: ^/admin
+            provider: app_user_provider
+            user_checker: App\Listener\UserChecker
+            form_login:
+                login_path: app_admin_login
+                check_path: app_admin_login
+                success_handler: App\Security\LoginSuccessHandler
+            logout:
+                path: app_admin_logout
+                target: /admin/login
         main:
+            user_checker: App\Listener\UserChecker
+            logout:
+                path: /logout
+                target: /login
+            form_login:
+                # "app_login" is the name of the route created previously
+                login_path: app_login
+                check_path: app_login
+                success_handler: App\Security\LoginSuccessHandler
             lazy: true
             provider: app_user_provider
 
@@ -26,10 +51,10 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
-    # Note: Only the *first* matching rule is applied
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/account, roles: ROLE_USER }
 
 when@test:
     security:

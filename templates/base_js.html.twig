@@ -45,16 +45,113 @@
         {% for label, messages in app.flashes(['success', 'warning', 'danger']) %}
             {% for message in messages %}
                 {% if label == 'success' %}
-                    notyf.success('{{ message }}');
+                    notyf.success({{ message|json_encode|raw }});
                 {% elseif label == 'danger' %}
-                    notyf.error('{{ message }}');
+                    notyf.error({{ message|json_encode|raw }});
                 {% elseif label == 'warning' %}
                     notyf.open({
                         'type': 'warning',
-                        'message': "{{ message }}"
+                        'message': {{ message|json_encode|raw }}
                     });
                 {% endif %}
             {% endfor %}
         {% endfor %}
+
+        const statusPresentation = {
+            product: {
+                masque: {label: 'Masqué', color: 'text-secondary', icon: 'bi-check-circle'},
+                publie: {label: 'Publié', color: 'text-success', icon: 'bi-check-circle-fill'}
+            },
+            order: {
+                en_attente: {label: 'En attente', color: 'text-warning', icon: 'bi-check-circle-fill'},
+                validee: {label: 'Validée', color: 'text-success', icon: 'bi-check-circle-fill'},
+                non_validee: {label: 'Non validée', color: 'text-danger', icon: 'bi-check-circle-fill'}
+            },
+            payment: {
+                non_paye: {label: 'Non payé', color: 'text-warning', icon: 'bi-check-circle-fill'},
+                paye: {label: 'Payé', color: 'text-success', icon: 'bi-check-circle-fill'},
+                rembourse: {label: 'Remboursé', color: 'text-info', icon: 'bi-check-circle-fill'}
+            }
+        };
+
+        function updateStatusButton(button, kind, status) {
+            const presentation = statusPresentation[kind][status];
+            const label = presentation.label + ' — cliquer pour passer au statut suivant';
+            button
+                .data('status', status)
+                .removeClass('text-secondary text-success text-warning text-danger text-info')
+                .addClass(presentation.color)
+                .attr({title: label, 'aria-label': label})
+                .html('<i class="bi ' + presentation.icon + '" aria-hidden="true"></i>');
+        }
+
+        $(document).on('submit', '.js-status-ajax-form', function(event) {
+            event.preventDefault();
+
+            const form = $(this);
+            const submitButton = form.find(':submit');
+            submitButton.prop('disabled', true);
+
+            $.ajax({
+                url: form.attr('action'),
+                method: form.attr('method') || 'POST',
+                data: form.serialize(),
+                dataType: 'json',
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            }).done(function(response) {
+                const kind = form.data('status-kind');
+                updateStatusButton(submitButton, kind, response.status);
+                if (kind === 'product') {
+                    $('#' + form.data('status-target')).text(statusPresentation.product[response.status].label);
+                }
+                notyf.success(response.message);
+            }).fail(function(xhr) {
+                const message = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'Une erreur est survenue lors de la mise à jour du statut.';
+                notyf.error(message);
+            }).always(function() {
+                submitButton.prop('disabled', false);
+            });
+        });
+
+        $(document).on('click', '[data-user-toggle]', function() {
+            const button = $(this);
+            button.prop('disabled', true);
+
+            $.ajax({
+                url: button.data('url'),
+                method: 'POST',
+                data: {_token: button.data('csrf')},
+                dataType: 'json',
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            }).done(function(response) {
+                if (response.success !== true) {
+                    notyf.error(response.message || 'La modification du compte a échoué.');
+                    return;
+                }
+
+                const isValid = response.isValid;
+                const label = isValid ? 'Activée' : 'Désactivée';
+                const action = isValid ? 'Compte activé — cliquer pour désactiver' : 'Compte désactivé — cliquer pour activer';
+                const status = button.closest('tr').find('[data-user-status]');
+                status.text(label)
+                    .toggleClass('text-bg-success', isValid)
+                    .toggleClass('text-bg-secondary', !isValid);
+                button
+                    .data('is-valid', isValid)
+                    .removeClass('text-success text-secondary')
+                    .addClass(isValid ? 'text-success' : 'text-secondary')
+                    .attr({title: action, 'aria-label': action})
+                    .html('<i class="bi ' + (isValid ? 'bi-check-circle-fill' : 'bi-check-circle') + '" aria-hidden="true"></i>');
+                notyf.success(response.message);
+            }).fail(function(xhr) {
+                notyf.error(xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'La modification du compte a échoué.');
+            }).always(function() {
+                button.prop('disabled', false);
+            });
+        });
   });
   </script>

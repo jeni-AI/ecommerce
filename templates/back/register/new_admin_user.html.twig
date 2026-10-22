@@ -1,0 +1,12 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Créer un compte utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1>Créer un compte </h1>
+        <p>Choisissez le rôle client ou administrateur.</p>
+        {{ form(registerForm) }}
+        <a class="btn btn-link px-0" href="{{ path('app_users') }}">Retour à la liste</a>
+    </div>
+{% endblock %}

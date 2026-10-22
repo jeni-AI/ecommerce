@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} | La Boutique Gabonaise{% endblock %}
+
+{% block body %}
+    <section class="container py-5 mt-4">
+        <a class="btn btn-link px-0 mb-3" href="{{ path('app_home') }}">← Retour au catalogue</a>
+
+        <article class="card border-0 shadow-sm overflow-hidden">
+            <div class="row g-0">
+                <div class="col-lg-6 bg-light d-flex align-items-center justify-content-center p-4 p-md-5">
+                    {% if product.image %}
+                        <img src="{{ asset('uploads/' ~ product.image) }}"
+                             alt="{{ product.name }}" class="img-fluid"
+                             style="max-height: 520px; object-fit: contain;">
+                    {% else %}
+                        <div class="text-body-secondary py-5">Image non disponible</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="p-4 p-md-5 h-100 d-flex flex-column">
+                        <p class="text-uppercase text-primary fw-semibold small mb-2">
+                            {{ product.category.label }} · {{ product.brand.label }}
+                        </p>
+                        <h1 class="display-6 fw-bold mb-3">{{ product.name }}</h1>
+                        <p class="display-6 fw-bold text-primary mb-4">
+                            {{ product.price|number_format(0, ',', ' ') }} FCFA
+                        </p>
+
+                        {% if product.description %}
+                            <div class="text-body-secondary mb-4">{{ product.description|nl2br }}</div>
+                        {% endif %}
+
+                        <div class="mb-4">
+                            {% if product.stock > 0 %}
+                                <span class="badge rounded-pill text-bg-success">En stock : {{ product.stock }}</span>
+                            {% else %}
+                                <span class="badge rounded-pill text-bg-danger">Indisponible</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-auto">
+                            {% if product.stock > 0 and is_granted('ROLE_CLIENT') %}
+                                <form class="js-cart-add" action="{{ path('app_cart_add', {id: product.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="product-quantity">Quantité</label>
+                                        <input class="form-control" id="product-quantity" type="number"
+                                               name="quantity" value="1" min="1" max="{{ product.stock }}" required>
+                                    </div>
+                                    <button class="btn btn-primary btn-lg w-100" type="submit">Ajouter au panier</button>
+                                </form>
+                            {% elseif product.stock > 0 %}
+                                <a class="btn btn-primary btn-lg w-100" href="{{ path('app_login') }}">
+                                    Connectez-vous pour commander
+                                </a>
+                            {% endif %}
+                            <a class="btn btn-outline-secondary w-100 mt-3" href="{{ path('app_home') }}">
+                                Continuer mes achats
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <div class="alert alert-success d-none mt-3" role="status" data-cart-message></div>
+        <div class="alert alert-danger d-none mt-3" role="alert" data-cart-error></div>
+    </section>
+
+    {% if is_granted('ROLE_CLIENT') and product.stock > 0 %}
+        <script>
+            $(function () {
+                $('.js-cart-add').on('submit', function (event) {
+                    event.preventDefault();
+                    const form = $(this);
+                    const button = form.find('button');
+                    button.prop('disabled', true);
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: 'POST',
+                        data: form.serialize(),
+                        dataType: 'json'
+                    }).done(function (response) {
+                        $('[data-cart-error]').addClass('d-none');
+                        $('[data-cart-message]').text(response.message).removeClass('d-none');
+                    }).fail(function (xhr) {
+                        const message = xhr.responseJSON?.message || 'Impossible d’ajouter ce produit au panier.';
+                        $('[data-cart-message]').addClass('d-none');
+                        $('[data-cart-error]').text(message).removeClass('d-none');
+                    }).always(function () {
+                        button.prop('disabled', false);
+                    });
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}{{ brand.label }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1>{{ brand.label }}</h1>
+        <p>Date de création : {{ brand.createdAt|date('d/m/Y H:i:s') }}</p>
+        <a class="btn btn-outline-secondary" href="{{ path('app_brand') }}">Retour à la liste</a>
+        <a class="btn btn-primary" href="{{ path('app_brand_edit', {id: brand.id}) }}">Modifier</a>
+    </div>
+{% endblock %}

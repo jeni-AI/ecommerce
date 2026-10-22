@@ -1,0 +1,47 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Marques{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Marques</h1>
+        <a class="btn btn-primary" href="{{ path('app_brand_new') }}">Ajouter une marque</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success mt-3">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger mt-3">{{ message }}</div>
+    {% endfor %}
+
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Marque</th>
+                <th>Date de création</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brand in brands %}
+                <tr>
+                    <td>{{ brand.label }}</td>
+                    <td>{{ brand.createdAt|date('d/m/Y H:i:s') }}</td>
+                    <td class="d-flex gap-2">
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_brand_show', {id: brand.id}) }}">Détails</a>
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('app_brand_edit', {id: brand.id}) }}">Modifier</a>
+                        <form method="post" action="{{ path('app_brand_delete', {id: brand.id}) }}" onsubmit="return confirm('Supprimer cette marque ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ brand.id) }}">
+                            <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3">Aucune marque enregistrée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Détail du rôle{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <a class="btn btn-link px-0 text-decoration-none mb-3" href="{{ path('app_role') }}">Retour aux rôles</a>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white p-4">
+                <h1 class="h2 fw-bold mb-0">{{ role.label }}</h1>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Code</dt>
+                    <dd class="col-sm-9"><code>{{ role.code }}</code></dd>
+                    <dt class="col-sm-3">Créé le</dt>
+                    <dd class="col-sm-9">{{ role.createdAt|date('d/m/Y H:i') }}</dd>
+                    <dt class="col-sm-3">Utilisateurs associés</dt>
+                    <dd class="col-sm-9">{{ userCount }}</dd>
+                </dl>
+                <a class="btn btn-primary mt-3" href="{{ path('app_role_edit', {id: role.id}) }}">Modifier</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

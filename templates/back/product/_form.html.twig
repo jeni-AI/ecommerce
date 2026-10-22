@@ -1,0 +1,17 @@
+{{ form_start(form, {attr: {class: 'product-form'}, enctype: 'multipart/form-data'}) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.price) }}
+    {{ form_row(form.stock) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.brand) }}
+    {{ form_row(form.imageFile) }}
+    {% if form.vars.value.image %}
+        <p class="small text-body-secondary">Image actuelle : {{ form.vars.value.image }}</p>
+    {% endif %}
+    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+        <button class="btn {{ button_class|default('btn-primary') }} px-4">{{ button_label|default('Enregistrer') }}</button>
+        <a class="btn btn-outline-secondary" href="{{ path('app_product_index') }}">Annuler</a>
+    </div>
+{{ form_end(form) }}

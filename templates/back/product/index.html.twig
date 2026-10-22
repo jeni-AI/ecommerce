@@ -1,0 +1,117 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Produits | La Boutique{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endfor %}
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <p class="text-uppercase text-primary fw-semibold small mb-1">Catalogue</p>
+                <h1 class="h2 fw-bold mb-1">Gestion des produits</h1>
+                <p class="text-body-secondary mb-0">Consultez et gérez les produits de votre boutique.</p>
+            </div>
+             <a class="btn btn-primary" href="{{ path('app_product_new') }}"
+               aria-label="Ajouter un produit" title="Ajouter un produit">
+                <i class="bi bi-plus-lg"></i>
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 px-4 pt-4 pb-0">
+                <h2 class="h5 mb-1">Tous les produits</h2>
+                <p class="small text-body-secondary mb-3">{{ products|length }} produit{{ products|length > 1 ? 's' : '' }}</p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Image</th>
+                            <th class="ps-4">Produit</th>
+                            <th>Marque</th>
+                            <th>Catégorie</th>
+                            <th>Description</th>
+                            <th class="text-nowrap">Prix</th>
+                            <th class="text-nowrap">Stock</th>
+                            <th>Statut</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td class="ps-4">
+                                {% if product.image %}
+                                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" width="56" height="56" class="rounded object-fit-cover">
+                                {% else %}
+                                    <span class="small text-body-secondary">Aucune</span>
+                                {% endif %}
+                            </td>
+                            <td class="ps-4">
+                                <a class="fw-semibold text-decoration-none text-body" href="{{ path('app_product_show', {'id': product.id}) }}">
+                                    {{ product.name }}
+                                </a>
+                                <div class="small text-body-secondary">Réf. #{{ product.id }}</div>
+                            </td>
+                            <td>{{ product.brand.label }}</td>
+                            <td>{{ product.category.label }}</td>
+                            <td class="text-body-secondary">
+                                {% if product.description %}
+                                    {{ product.description|length > 90 ? product.description|slice(0, 90) ~ '…' : product.description }}
+                                {% else %}
+                                    <span class="fst-italic">Aucune description</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-semibold text-nowrap">{{ product.price|number_format(0, ',', ' ') }} FCFA</td>
+                            <td>{{ product.stock }}</td>
+                            <td>
+                                {% set isPublished = product.currentStatus and product.currentStatus.status == 'publie' %}
+                                {% set productStatus = isPublished ? 'publie' : 'masque' %}
+                                <form method="post" class="js-status-ajax-form js-product-publication-form"
+                                      action="{{ path('app_product_toggle_publication', {id: product.id}) }}"
+                                      data-status-target="product-status-label-{{ product.id }}"
+                                      data-status-kind="product">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle-product-publication' ~ product.id) }}">
+                                    <span class="visually-hidden" id="product-status-label-{{ product.id }}">{{ isPublished ? 'Publié' : 'Masqué' }}</span>
+                                    <button id="product-status-button-{{ product.id }}" type="submit"
+                                            class="btn btn-link p-0 fs-5 {{ isPublished ? 'text-success' : 'text-secondary' }}"
+                                            aria-label="{{ isPublished ? 'Publié — cliquer pour masquer' : 'Masqué — cliquer pour publier' }}"
+                                            title="{{ isPublished ? 'Publié — cliquer pour masquer' : 'Masqué — cliquer pour publier' }}"
+                                            data-status="{{ productStatus }}">
+                                        <i class="bi {{ isPublished ? 'bi-check-circle-fill' : 'bi-check-circle' }}" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="pe-4">
+                                <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{{ path('app_product_show', {'id': product.id}) }}"
+                                       aria-label="Voir le produit" title="Détails">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="{{ path('app_product_edit', {'id': product.id}) }}"
+                                       aria-label="Modifier le produit" title="Modifier">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <p class="fw-semibold mb-1">Aucun produit pour le moment</p>
+                                <p class="text-body-secondary mb-3">Commencez par ajouter le premier produit à votre catalogue.</p>
+                                <a class="btn btn-primary" href="{{ path('app_product_new') }}">Ajouter un produit</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

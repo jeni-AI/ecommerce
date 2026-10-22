@@ -1,0 +1,108 @@
+{% extends 'base-back.html.twig' %}
+
+{% block title %}Commandes{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Commandes</h1>
+             <a class="btn btn-primary" href="{{ path('app_commande_new') }}"
+               aria-label="Ajouter une commande" title="Ajouter une commande">
+                <i class="bi bi-plus-lg"></i>
+            </a>
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endfor %}
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Client</th>
+                        <th>Créée le</th>
+                        <th>Montant total</th>
+                        <th>Statut</th>
+                        <th>Paiement</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes %}
+                        <tr>
+                            <td>{{ commande.code }}</td>
+                            <td>{{ commande.client.email }}</td>
+                            <td>{{ commande.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ commande.totalAmount|number_format(0, ',', ' ') }} FCFA</td>
+                            <td>
+                                {% set commandStatus = commande.currentStatus ? commande.currentStatus.status : 'en_attente' %}
+                                {% set commandLabel = commande.currentStatus ? commande.currentStatus.label : 'En attente' %}
+                                <form method="post" class="js-status-ajax-form mt-2"
+                                      action="{{ path('app_commande_status_update', {id: commande.id}) }}"
+                                      data-status-target="commande-status-{{ commande.id }}"
+                                      data-status-kind="order">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('update-commande-status' ~ commande.id) }}">
+                                    <input type="hidden" name="field" value="status">
+                                    {% set commandColor = commandStatus == 'validee' ? 'text-success' : (commandStatus == 'non_validee' ? 'text-danger' : 'text-warning') %}
+                                    <button id="commande-status-{{ commande.id }}" type="submit"
+                                            class="btn btn-link p-0 fs-5 {{ commandColor }}"
+                                            data-status="{{ commandStatus }}"
+                                            title="{{ commandLabel }} — cliquer pour passer au statut suivant"
+                                            aria-label="{{ commandLabel }} — cliquer pour passer au statut suivant">
+                                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                {% set paymentLabels = {'non_paye': 'Non payé', 'paye': 'Payé', 'rembourse': 'Remboursé'} %}
+                                {% set paymentColor = commande.paymentStatus == 'paye' ? 'text-success' : (commande.paymentStatus == 'rembourse' ? 'text-info' : 'text-warning') %}
+                                <form method="post" class="js-status-ajax-form mt-2"
+                                      action="{{ path('app_commande_status_update', {id: commande.id}) }}"
+                                      data-status-target="payment-status-{{ commande.id }}"
+                                      data-status-kind="payment">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('update-commande-paymentStatus' ~ commande.id) }}">
+                                    <input type="hidden" name="field" value="paymentStatus">
+                                    <button id="payment-status-{{ commande.id }}" type="submit"
+                                            class="btn btn-link p-0 fs-5 {{ paymentColor }}"
+                                            data-status="{{ commande.paymentStatus }}"
+                                            title="{{ paymentLabels[commande.paymentStatus] }} — cliquer pour passer au statut suivant"
+                                            aria-label="{{ paymentLabels[commande.paymentStatus] }} — cliquer pour passer au statut suivant">
+                                        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </td>
+                           <td>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{{ path('app_commande_show', {id: commande.id}) }}"
+                                       aria-label="Voir la commande" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="{{ path('app_commande_edit', {id: commande.id}) }}"
+                                       aria-label="Modifier la commande" title="Modifier">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form method="post" action="{{ path('app_commande_delete', {id: commande.id}) }}"
+                                          onsubmit="return confirm('Supprimer cette commande ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                aria-label="Supprimer la commande" title="Supprimer">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucune commande pour le moment.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
